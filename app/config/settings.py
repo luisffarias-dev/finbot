@@ -27,10 +27,28 @@ class Settings(BaseSettings):
     groq_api_key: SecretStr | None = None
     gemini_api_key: SecretStr | None = None
     mistral_api_key: SecretStr | None = None
+    # Chave pública: identifica o projeto no Langfuse (pode ser texto comum).
+    langfuse_public_key: str | None = None
+    # Chave secreta: SecretStr esconde o valor em print() e em mensagens de erro.
+    langfuse_secret_key: SecretStr | None = None
+    # Servidor do Langfuse (projeto criado nos EUA usa https://us.cloud.langfuse.com).
+    langfuse_host: str = "https://cloud.langfuse.com"
+
+    # Endereço da API, usado pelo front em Streamlit.
+    # No computador é a API local; na nuvem, aponta para a API publicada no Render.
+    api_url: str = "http://127.0.0.1:8000"
+
 
     @property
     def modelo(self) -> str:
         return self.llm_modelo or MODELOS_PADRAO[self.llm_provedor]
 
+    @property
+    def langfuse_ativo(self) -> bool:
+        """Diz se o Langfuse está configurado: só liga com as DUAS chaves preenchidas."""
+        # get_secret_value() revela o texto guardado no SecretStr; sem chave, usa "" (vazio).
+        segredo = self.langfuse_secret_key.get_secret_value() if self.langfuse_secret_key else ""
+        # bool(...) dá True só se a chave pública E a secreta tiverem conteúdo.
+        return bool(self.langfuse_public_key and segredo)
 
 settings = Settings()
