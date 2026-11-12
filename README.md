@@ -42,6 +42,17 @@ Com o ambiente virtual ativado, rode:
 pytest -v
 ```
 
+## Links do projeto
+
+| O quê | Link |
+|---|---|
+| Chat publicado (Streamlit Cloud) | https://finbotluisfernando.streamlit.app/ |
+| API publicada (Render) | https://finbot-api-sszc.onrender.com|
+| Documentação da API | https://finbot-api-sszc.onrender.com/docs |
+
+No plano gratuito, a API "dorme" depois de um tempo sem uso: a primeira pergunta pode demorar cerca de 1 minuto.
+
+
 ## Segurança
 
 O arquivo `.env` contém chaves privadas e não deve ser enviado ao GitHub. O arquivo `.env.example` contém apenas o modelo das configurações e pode ser publicado.
