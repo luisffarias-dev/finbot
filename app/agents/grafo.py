@@ -18,6 +18,11 @@ from app.agents.chatbot import no_chatbot
 from app.llm.observabilidade import callbacks, rastrear
 from app.repository import checkpointer, conversas, perfis
 
+from app.tools.conhecimento import buscar_documentos
+from app.tools.mercado import FERRAMENTAS_MERCADO
+from app.utils.mensagens import conversa_limpa
+
+
 from app.agents.chatbot import no_chatbot
 from app.llm.observabilidade import callbacks, rastrear
 from app.repository import checkpointer, conversas, perfis
@@ -36,8 +41,8 @@ class EstadoChat(TypedDict, total=False):
 # ---------- Montagem ----------
 def montar_grafo(memoria=None):
     
-    # O grafo agora é o agente com ferramentas (o loop pensar ⇄ ferramentas de base.py).
-    return criar_agente("finbot", "sistema", FERRAMENTAS_MERCADO, checkpointer=memoria)
+    # O agente agora tem as ferramentas de mercado + a busca em documentos.
+    return criar_agente("finbot", "sistema", FERRAMENTAS_MERCADO + [buscar_documentos], checkpointer=memoria)
 
 
 @lru_cache
@@ -51,6 +56,7 @@ def executar(pergunta: str, sessao: str, usuario: str = "anonimo") -> dict:
     config = {"configurable": {"thread_id": sessao}, "callbacks": callbacks()}
     # Só a pergunta nova vai na entrada; o histórico anterior vem do checkpointer.
     entrada = {"messages": [HumanMessage(pergunta)], "perfil": perfis.texto_perfil(usuario)}
+    entrada["passos"] = 0  # zera o contador do guardrail a cada pergunta nova
     with rastrear(sessao, usuario):
         # Roda o grafo do START ao END e devolve o estado final.
         estado = grafo().invoke(entrada, config)

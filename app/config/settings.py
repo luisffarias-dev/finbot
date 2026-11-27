@@ -49,6 +49,10 @@ class Settings(BaseSettings):
     brapi_token: SecretStr | None = None
     max_passos_agente: int = 5  # guardrail: no máximo 5 voltas no loop de tools
 
+     # RAG
+    # Como transformar texto em vetores: "tfidf" (leve, padrão) ou "embeddings" (mais preciso, mais pesado).
+    rag_modo: Literal["tfidf", "embeddings"] = "tfidf"
+
     @property
     def modelo(self) -> str:
         return self.llm_modelo or MODELOS_PADRAO[self.llm_provedor]
